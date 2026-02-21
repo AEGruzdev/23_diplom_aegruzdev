@@ -1,0 +1,48 @@
+{
+  "shop": {
+    "name": "Электронный мир",
+    "url": "https://electronic-world.ru"
+  },
+  "categories": [
+    {"name": "Смартфоны"},
+    {"name": "Ноутбуки"},
+    {"name": "Аксессуары"}
+  ],
+  "goods": [
+    {
+      "name": "iPhone 14",
+      "category": "Смартфоны",
+      "price": 89990,
+      "price_rrc": 89990,
+      "quantity": 10,
+      "parameters": {
+        "Процессор": "A16 Bionic",
+        "Память": "128GB",
+        "Цвет": "Черный"
+      }
+    },
+    {
+      "name": "MacBook Pro 14",
+      "category": "Ноутбуки",
+      "price": 199990,
+      "price_rrc": 199990,
+      "quantity": 5,
+      "parameters": {
+        "Процессор": "M2 Pro",
+        "Память": "16GB",
+        "SSD": "512GB"
+      }
+    },
+    {
+      "name": "Чехол для iPhone",
+      "category": "Аксессуары",
+      "price": 1990,
+      "price_rrc": 1990,
+      "quantity": 50,
+      "parameters": {
+        "Материал": "Силикон",
+        "Цвет": "Прозрачный"
+      }
+    }
+  ]
+}
