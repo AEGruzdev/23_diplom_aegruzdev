@@ -1,0 +1,12 @@
+venv/
+.env
+*.pyc
+__pycache__/
+*.log
+.local/
+.git
+.DS_Store
+media/
+static/
+README.md
+.gitignore

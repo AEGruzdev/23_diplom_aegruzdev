@@ -1,5 +1,4 @@
 from rest_framework import generics, status, permissions
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -10,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from .models import *
 from .serializers import *
+from .utils.auth_utils import IsOwnerOrReadOnly
 
 
 class RegisterView(generics.CreateAPIView):
@@ -43,10 +43,16 @@ class ContactListCreateView(generics.ListCreateAPIView):
 class ContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Детали контакта, обновление, удаление"""
     serializer_class = ContactSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     
     def get_queryset(self):
         return Contact.objects.filter(user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        """Переопределяем метод для возврата 204"""
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ProductListView(generics.ListAPIView):
@@ -156,7 +162,8 @@ class CartView(APIView):
         try:
             item = cart.items.get(id=item_id)
             item.delete()
-            return Response(OrderSerializer(cart).data)
+            # Возвращаем 204 No Content
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except OrderItem.DoesNotExist:
             return Response(
                 {'error': 'Товар не найден в корзине'},
@@ -306,11 +313,21 @@ class OrderListView(generics.ListAPIView):
 class OrderDetailView(generics.RetrieveAPIView):
     """Детали заказа"""
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     lookup_url_kwarg = 'order_id'
     
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        return Order.objects.all()
+    
+    def get_object(self):
+        obj = super().get_object()
+        # Дополнительная проверка владельца
+        if obj.user != self.request.user:
+            self.permission_denied(
+                self.request, 
+                message="У вас нет прав для просмотра этого заказа"
+            )
+        return obj
 
 
 class SupplierOrderListView(generics.ListAPIView):

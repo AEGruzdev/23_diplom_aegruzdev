@@ -8,8 +8,14 @@ class Shop(models.Model):
     """Модель магазина/поставщика"""
     name = models.CharField(max_length=100, verbose_name='Название')
     url = models.URLField(verbose_name='Ссылка', null=True, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', 
-                               null=True, blank=True)
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name='Пользователь-владелец',
+        null=True, 
+        blank=True,
+        related_name='shop'
+    )
     state = models.BooleanField(default=True, verbose_name='Статус приема заказов')
     
     class Meta:
@@ -113,8 +119,12 @@ class Contact(models.Model):
     ]
     
     type = models.CharField(max_length=20, choices=CONTACT_TYPES, verbose_name='Тип')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь',
-                            related_name='contacts')
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name='Пользователь',
+        related_name='contacts'
+    )
     value = models.CharField(max_length=200, verbose_name='Значение')
     
     class Meta:
@@ -137,8 +147,12 @@ class Order(models.Model):
         ('canceled', 'Отменен'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь',
-                            related_name='orders')
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name='Покупатель',
+        related_name='orders'
+    )
     dt = models.DateTimeField(default=timezone.now, verbose_name='Дата и время')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='basket', 
                             verbose_name='Статус')
